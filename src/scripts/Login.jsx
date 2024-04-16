@@ -1,66 +1,66 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css';
+import { InputText } from 'primereact/inputtext';
+import { Password } from 'primereact/password';
+import './Estilos.css';
+import { Button } from 'primereact/button';
 
 function Login() {
   const [matricula, setMatricula] = useState('');
   const [senha, setSenha] = useState('');
-  const [formCompleto, setFormCompleto] = useState(false);
   const navigate = useNavigate();
-
 
   const vazia = (str) => (!str?.length);
 
-  const lidaComMatricula = () => {
+  const lidaComMatricula = (evento) => {
     evento.preventDefault();
-    //simula a autenticação
     console.log('Matrícula:', matricula);
     if (vazia(matricula)) {
       alert('Preencha o campo de matrícula!');
     }
   };
 
-  const lidaComSenha = () => {
-    evento.preventoDefault();
-    //simula a autenticação
-    console.log('Senha:', senha);
-    
-    if (senha.length < 8) {
-      alert('A senha deve ter no mínimo 8 caracteres!');
-    }
+  const senhaForte = (senha) => {
+    const regexSenha = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/;
+    return regexSenha.test(senha);
+  };
 
+  const lidaComSenha = (evento) => {
+    evento.preventDefault();
+    console.log('Senha:', senha);
+    if (senha.length < 8 || !senhaForte(senha)) {
+      alert('A senha deve ter pelo menos 8 caracteres, com letras maiúsculas, minúsculas, números e caracteres especiais!');
+    }
     if (vazia(senha)) {
       alert('Preencha o campo de senha!');
     }
   };
 
-  const lidaComLogin = (evento) => { // importa lidaComSenha e lidaComMatricula
+  const lidaComLogin = (evento) => {
     evento.preventDefault();
-    lidaComMatricula();
-    lidaComSenha();
+    lidaComMatricula(evento);
+    lidaComSenha(evento);
     if (!vazia(matricula) && senha.length >= 8) {
-      navigate('/home');
+      alert("Matricula ou senha inválidos!");
     } else {
       alert('Preencha os campos corretamente!');
     }
   };
 
   const enviaRegistro = () => {
-    // Redirecionar para página de registro
     navigate('/registrar');
   };
 
-  const NavegaParaHome = () => {
-    // Redirecionar para página de registro
-    navigate('/home');
-  }
+  const NavegarParaHome = () => {
+    navigate('/editar');
+  };
 
   return (
     <>
       <form onSubmit={lidaComLogin} className="formulario">
         <div className="campo">
           <label htmlFor="matricula">Matrícula:</label>
-          <input
+          <InputText
             type="text"
             id="matricula"
             value={matricula}
@@ -70,20 +70,18 @@ function Login() {
         </div>
         <div className="campo">
           <label htmlFor="senha">Senha:</label>
-          <input
+          <Password
             type="text"
-            id="texto"
+            id="senha"
             value={senha}
             onChange={(evento) => setSenha(evento.target.value)}
             required
           />
         </div>
         <div className="acoes">
-          <button type="button" disabled={!matricula || !senha} onClick={NavegaParaHome}>Entrar</button>
+          <Button type="submit" label="Entrar" onClick={NavegarParaHome}/>
           <p></p>
-          <button type="button" disabled={formCompleto} onClick={enviaRegistro}>
-            Registrar
-          </button>
+          <Button type="button" label="Registrar sua Conta" onClick={enviaRegistro}/>
         </div>
       </form>
     </>

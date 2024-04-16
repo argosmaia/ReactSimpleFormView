@@ -1,25 +1,26 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './Login.css';
+import { InputText } from 'primereact/inputtext';
+import { SelectButton } from 'primereact/selectbutton';
+import { Calendar } from 'primereact/calendar';
+import { Button } from 'primereact/button';
+import './Estilos.css';
 
 function Registrar() {
-    const [nome, setNome] = React.useState('')
-    const [email, setEmail] = React.useState('')
+    const [nome, setNome] = useState('')
+    const [email, setEmail] = useState('')
     const [matricula, setMatricula] = useState('');
     const [dataNascimento, setDataNascimento] = useState('');
     const [formCompleto, setFormCompleto] = useState(false);
     const [universidade, setUniversidade] = useState('');
     const navigate = useNavigate();
 
-    const lidaComEnvio = (evento) => {
-        evento.preventDefault();
-        if (nome && email && matricula && universidade && dataNascimento) {
-            console.log('Dados do formulário:', { nome, email, matricula, universidade, dataNascimento });
-            setFormCompleto(true);
-        } else {
-            alert('Preencha todos os campos!');
-        }
-    };
+    const universidadeOptions = [
+        { label: 'Selecione a universidade', value: null },
+        { label: 'UERJ', value: 'UERJ' },
+        { label: 'UFRJ', value: 'UFRJ' },
+        { label: 'UFF', value: 'UFF' }
+    ];
 
     const lidaComInput = (evento, setState) => {
         setState(evento.target.value);
@@ -41,6 +42,19 @@ function Registrar() {
         }
     };
 
+    // Função para lidar com data de nascimento válida, 18 anos a partir da data de hoje (usar today())
+    const lidaComDataNascimento = (evento) => {
+        const dataNascimento = evento.target.value;
+        const hoje = new Date();
+        const data = new Date(dataNascimento);
+        const idade = hoje.getFullYear() - data.getFullYear();
+        if (idade >= 18) {
+            setDataNascimento(dataNascimento);
+        } else {
+            alert('Você deve ter 18 anos ou mais para se registrar!');
+        }
+    };
+
     const lidaEmailComRegex = (evento) => {
         const email = evento.target.value;
         // Expressão regular para validar o email, com @ obrigatório e domínio com no mínimo 2 caracteres + .(algum dominio)
@@ -55,67 +69,75 @@ function Registrar() {
     const irParaLogin = () => {
         // Redirecionar para página de registro (substitua com sua lógica)
         navigate('/login');
-      };
+    };
+
+    const lidaComEnvio = (evento) => {
+        evento.preventDefault();
+        if (nome && email && matricula && universidade && dataNascimento) {
+            console.log('Dados do formulário:', { nome, email, matricula, universidade, dataNascimento });
+            setFormCompleto(true);
+        } else {
+            alert('Preencha todos os campos!');
+        }
+    };
 
     return (
         <>
             <form onSubmit={lidaComEnvio} className="formulario">
             <div className="campo">
                 <label htmlFor="nome">Nome:</label>
-                <input
-                type="text"
-                id="nome"
-                value={nome}
-                onChange={(evento) => lidaComInput(evento, setNome)}
-                required
+                <InputText
+                    type="text"
+                    id="nome"
+                    value={nome}
+                    onChange={(evento) => lidaComInput(evento, setNome)}
+                    required
                 />
             </div>
             <div className="campo">
                 <label htmlFor="email">Email:</label>
-                <input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(evento) => { lidaEmailComRegex(evento); lidaComInput(evento, setEmail); }}
-                required
+                <InputText
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(evento) => { lidaEmailComRegex(evento); lidaComInput(evento, setEmail); }}
+                    required
                 />
             </div>
             <div className="campo">
                 <label htmlFor="matricula">Matrícula:</label>
-                <input
-                type="text"
-                id="matricula"
-                value={matricula}
-                onChange={(evento) => lidaComInput(evento, setMatricula)}
-                required
+                <InputText
+                    type="text"
+                    id="matricula"
+                    value={matricula}
+                    onChange={(evento) => lidaComInput(evento, setMatricula)}
+                    required
                 />
             </div>
 
             <div className="campo">
                 <label htmlFor="universidades">Universidades:</label>
-                <select id="universidade"
-                value={universidade}
-                onChange={(evento) => lidaComInput(evento, setUniversidade)}
-                required
-                >
-                <option value="">Selecione a universidade</option>
-                <option value="UERJ">UERJ</option>
-                <option value="UFRJ">UFRJ</option>
-                <option value="UFF">UFF</option>
-                </select>
+                <SelectButton 
+                    id="universidade"
+                    value={universidade}
+                    onChange={(e) => setUniversidade(e.value)}
+                    optionLabel="label"
+                    options={universidadeOptions}
+                    placeholder="Selecione a universidade"
+                />
             </div>
 
             <div className="campo">
                 <label htmlFor="dataNascimento">Data de Nascimento:</label>
-                <input
+                <Calendar
                 type="date"
                 id="dataNascimento"
                 value={dataNascimento}
-                onChange={(evento) => {lidaComInput(evento, setDataNascimento), lidaComSelect(evento)}}
+                onChange={(evento) => {lidaComInput(evento, setDataNascimento), lidaComDataNascimento(evento)}}
                 required
                 />
             </div>
-                <button type="button" disabled={!formCompleto} onClick={irParaLogin}>Entrar</button>
+                <button type="button" disabled={!formCompleto} onClick={irParaLogin}>Enviar Cadastro</button>
             </form>
         </>
     );
