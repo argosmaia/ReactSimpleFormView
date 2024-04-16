@@ -3,19 +3,28 @@ import React from 'react';
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import Login from './scripts/Login';
 import Registrar from './scripts/Registrar';
-import Home from './scripts/Home';
+import { PrimeReactProvider } from 'primereact/api';
+import EnviarEditor from './scripts/EnviarEditor';
+import Contact from './scripts/Contact';
+import Menu from './scripts/Menu';
+import Dissertacoes from './scripts/Dissertacoes';
 
-function App() {
+export default function App(){
   return (
-    <BrowserRouter>
-      <Routes>
-        <Route path='/' element = {<Login />} />
-        <Route path='/login' element = {<Login />} />
-        <Route path='/registrar' element = {<Registrar />} />
-        <Route path='/home' element = {<Home />} />
-      </Routes>
-    </BrowserRouter>
+    <>
+    <PrimeReactProvider>
+      <Menu />
+      <BrowserRouter>
+        <Routes>
+          <Route path='/' element = {<Login />} />
+          <Route path='/login' element = {<Login />} />
+          <Route path='/registrar' element = {<Registrar />} />
+          <Route path='/contact' element = {<Contact />} />
+          <Route path='/editar' element = {<EnviarEditor />} />
+          <Route path='/dissertacoes' element = {<Dissertacoes />} />
+        </Routes>
+      </BrowserRouter>
+    </PrimeReactProvider>
+  </>
   );
 }
-
-export default App;
